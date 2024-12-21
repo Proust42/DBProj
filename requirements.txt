@@ -1,0 +1,8 @@
+dnspython==2.7.0
+pymongo==4.10.1
+pyodbc==5.2.0
+
+fastapi~=0.115.6
+pyarrow~=18.1.0
+fastparquet~=2024.11.0
+pandas~=2.2.3
