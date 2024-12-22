@@ -2,8 +2,8 @@ import logging
 import traceback
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from backend.app.services.mongo_service import create_collection, insert_data
-from typing import List
+from backend.app.services.mongo_service import create_collection, insert_data, update_data, delete_data
+from typing import List, Dict, Optional
 
 # 初始化日志记录器
 logger = logging.getLogger(__name__)
@@ -17,6 +17,18 @@ class CreateCollectionRequest(BaseModel):
 class InsertDataRequest(BaseModel):
     collection_name: str = Field(..., min_length=1, max_length=100, description="集合名称")
     data: List[dict] = Field(..., description="待插入的数据")
+
+class UpdateDataRequest(BaseModel):
+    collection_name: str = Field(..., description="集合名称")
+    filter_query: Dict = Field(..., description="筛选条件")
+    update_values: Dict = Field(..., description="更新字段和值")
+    multi: Optional[bool] = Field(default=False, description="是否更新多条数据（默认 False）")
+
+class DeleteDataRequest(BaseModel):
+    collection_name: str = Field(..., description="集合名称")
+    filter_query: Dict = Field(..., description="筛选条件")
+    multi: Optional[bool] = Field(default=False, description="是否删除多条数据（默认 False）")
+
 
 # 定义响应模型
 class InsertDataResponse(BaseModel):
@@ -60,3 +72,49 @@ def insert_data_endpoint(request: InsertDataRequest):
             status_code=500,
             detail=f"{error_message} | Traceback: {error_traceback}",
         )
+
+@router.put("/update-data")
+def update_data_endpoint(update_request: UpdateDataRequest):
+    """
+    更新数据的 API 端点。
+    """
+    try:
+        result = update_data(
+            collection_name=update_request.collection_name,
+            filter_query=update_request.filter_query,
+            update_values=update_request.update_values,
+            multi=update_request.multi,
+        )
+
+        if result["status"] == "error":
+            raise HTTPException(status_code=400, detail=result["message"])
+
+        return {
+            "message": result["message"],
+            "matched_count": result["matched_count"],
+            "modified_count": result["modified_count"],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/delete-data")
+def delete_data_endpoint(delete_request: DeleteDataRequest):
+    """
+    删除数据的 API 端点。
+    """
+    try:
+        result = delete_data(
+            collection_name=delete_request.collection_name,
+            filter_query=delete_request.filter_query,
+            multi=delete_request.multi,
+        )
+
+        if result["status"] == "error":
+            raise HTTPException(status_code=400, detail=result["message"])
+
+        return {
+            "message": result["message"],
+            "deleted_count": result["deleted_count"],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
