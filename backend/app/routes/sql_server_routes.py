@@ -1,4 +1,4 @@
-# backend/app/routes/database_routes.py
+# backend/app/routes/sql_server_routes.py
 from fastapi import APIRouter, HTTPException, Form
 from pydantic import BaseModel
 from ..services.sql_server_service import create_table, insert_data, delete_data, update_data, delete_table, join_tables

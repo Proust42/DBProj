@@ -2,7 +2,7 @@
 import pyodbc
 from backend.app.config import Config
 
-class DatabaseManager:
+class SQLServerDatabaseManager:
     _connection = None
 
     @classmethod
@@ -36,7 +36,7 @@ def create_table(query: str):
     创建表并打印连接的 SQL Server 实例和当前数据库。
     """
     try:
-        conn = DatabaseManager.get_connection()
+        conn = SQLServerDatabaseManager.get_connection()
         cursor = conn.cursor()
 
         # 打印 SQL Server 实例的唯一标识符
@@ -68,7 +68,7 @@ def insert_data(table_name: str, columns: list, values: list):
     向指定表插入数据，不使用 dict 或键值对。
     """
     try:
-        conn = DatabaseManager.get_connection()
+        conn = SQLServerDatabaseManager.get_connection()
         cursor = conn.cursor()
 
         # 动态生成 SQL 插入语句
@@ -97,7 +97,7 @@ def delete_data(table_name: str, condition: str):
     :param condition: 删除条件（WHERE 子句）
     """
     try:
-        conn = DatabaseManager.get_connection()
+        conn = SQLServerDatabaseManager.get_connection()
         cursor = conn.cursor()
 
         # 动态生成 DELETE SQL 语句
@@ -124,7 +124,7 @@ def update_data(table_name: str, condition: str, updates: list):
     """
     try:
         # 获取数据库连接
-        conn = DatabaseManager.get_connection()
+        conn = SQLServerDatabaseManager.get_connection()
         cursor = conn.cursor()
 
         # 动态生成 SQL 更新语句
@@ -148,7 +148,7 @@ def delete_table(table_name: str):
     删除指定数据表。
     """
     try:
-        conn = DatabaseManager.get_connection()
+        conn = SQLServerDatabaseManager.get_connection()
         cursor = conn.cursor()
 
         # 动态生成删除表的 SQL 语句
@@ -172,7 +172,7 @@ def join_tables(query: str):
     :param query: 完整的 SQL 查询语句（如 JOIN 操作）。
     """
     try:
-        conn = DatabaseManager.get_connection()
+        conn = SQLServerDatabaseManager.get_connection()
         cursor = conn.cursor()
 
         # 打印调试信息
